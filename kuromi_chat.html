@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抖音火花 - 庫洛米限定版</title>
+    <style>
+        :root {
+            --primary-bg: linear-gradient(180deg, #d8b4f8 0%, #a78bfa 40%, #f472b6 100%);
+            --card-bg: #ffffff;
+            --text-dark: #2d1a4a;
+            --text-muted: #7c6891;
+            --kuromi-purple: #8b5cf6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 模擬手機外框 */
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: var(--primary-bg);
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+
+        /* 上方標頭區域 */
+        .header {
+            padding: 25px 20px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .chat-days {
+            font-size: 14px;
+            opacity: 0.9;
+            font-weight: bold;
+        }
+
+        .days-number {
+            font-size: 64px; /* 完美容納 999 三位數 */
+            font-weight: 900;
+            line-height: 1;
+            margin-top: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .avatars {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .avatar-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            object-fit: cover;
+            margin-left: -10px;
+        }
+        .avatar-img:first-child { margin-left: 0; }
+
+        /* 主角庫洛米靜態顯示區域 */
+        .character-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .kuromi-wrapper {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .kuromi-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
+        }
+
+        /* 右側懸浮按鈕 */
+        .side-menu {
+            position: absolute;
+            right: 15px;
+            top: 45%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .side-btn {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(5px);
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #4a2874;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .side-btn .icon { font-size: 16px; margin-bottom: 1px; }
+
+        /* 等級與經驗條 */
+        .level-info {
+            text-align: center;
+            margin-top: 10px;
+            z-index: 2;
+        }
+
+        .level-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            margin-bottom: 6px;
+        }
+
+        .progress-bar-bg {
+            width: 160px;
+            height: 14px;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 7px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: white;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            width: 73.3%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff76a2, #b55fe6);
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+        }
+
+        /* 下半部白色任務面板 */
+        .bottom-panel {
+            background: var(--card-bg);
+            border-radius: 30px 30px 0 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .score-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .score-avail {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .score-avail strong {
+            font-size: 18px;
+            color: #ff9f00;
+        }
+
+        .btn-exchange {
+            background: #f3f0ff;
+            border: none;
+            color: var(--kuromi-purple);
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 任務列表 */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer; /* 滑鼠懸停顯示可點擊手勢 */
+            padding: 4px 0;
+            transition: opacity 0.2s;
+        }
+        
+        .task-item:hover {
+            opacity: 0.8;
+        }
+
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #3f2d56;
+        }
+
+        .checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        .task-item.completed .checkbox {
+            background: #ff76a2;
+            border-color: #ff76a2;
+            color: white;
+        }
+        .task-item.completed .task-text {
+            color: #a093b1;
+        }
+
+        .task-reward {
+            color: #ff9f00;
+            font-weight: bold;
+        }
+
+        /* 友誼成就 */
+        .achievement-section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 12px;
+        }
+
+        .achievements-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .achieve-card {
+            flex: 1;
+            height: 65px;
+            border-radius: 16px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer; /* 滑鼠懸停顯示可點擊手勢 */
+            transition: transform 0.2s;
+        }
+        
+        .achieve-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .achieve-card::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -5px;
+            right: 5px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+        .achieve-1 { background: #ffebee; }
+        .achieve-2 { background: #f3e5f5; }
+        .achieve-3 { background: #e0f7fa; }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        <div class="header">
+            <div>
+                <div class="chat-days">連續聊天天數</div>
+                <div class="days-number">999</div>
+            </div>
+            <div class="avatars">
+                <img class="avatar-img" src="https://picsum.photos/100/100?random=1" alt="avatar1">
+                <img class="avatar-img" src="https://picsum.photos/100/100?random=2" alt="avatar2">
+            </div>
+        </div>
+
+        <div class="character-section">
+            <div class="kuromi-wrapper">
+                <img class="kuromi-img" src="kuromi.jpg" alt="庫洛米">
+            </div>
+
+            <div class="side-menu">
+                <button class="side-btn"><span class="icon">✨</span>裝扮</button>
+                <button class="side-btn"><span class="icon">⚡</span>動作</button>
+                <button class="side-btn"><span class="icon">🔮</span>形象</button>
+            </div>
+
+            <div class="level-info">
+                <div class="level-title">99級 庫洛米</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill"></div>
+                    累计获取 🌟 11/15
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-panel">
+            <div class="score-row">
+                <div class="score-avail">可用 <strong>🌟 328</strong></div>
+                <button class="btn-exchange">去兌換 ❯</button>
+            </div>
+
+            <div class="task-list">
+                <div class="task-item completed">
+                    <div class="task-left">
+                        <div class="checkbox">✓</div>
+                        <span class="task-text">當天互發消息</span>
+                    </div>
+                    <div class="task-reward">⭐ +1</div>
+                </div>
+                <div class="task-item">
+                    <div class="task-left">
+                        <div class="checkbox"></div>
+                        <span class="task-text">當天互發 10 條消息</span>
+                    </div>
+                    <div class="task-reward">⭐ +3</div>
+                </div>
+                <div class="task-item">
+                    <div class="task-left">
+                        <div class="checkbox"></div>
+                        <span class="task-text">當天互發本地圖片或視頻</span>
+                    </div>
+                    <div class="task-reward">⭐ +3</div>
+                </div>
+            </div>
+
+            <div class="achievement-section-title">友誼成就</div>
+            <div class="achievements-grid">
+                <div class="achieve-card achieve-1" data-count="x6">🔥</div>
+                <div class="achieve-card achieve-2" data-count="x2">😈</div>
+                <div class="achieve-card achieve-3" data-count="x19">❄️</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
